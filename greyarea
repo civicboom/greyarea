@@ -1,0 +1,79 @@
+#!/usr/bin/python
+
+#
+# Copyright 2011 Civicboom. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+#   - Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#   - Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in
+#     the documentation and / or other materials provided with the
+#     distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+# OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+# OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+# OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# The views and conclusions contained in the software and documentation
+# are those of the authors and should not be interpreted as representing
+# official policies, either expressed or implied, of Civicboom.
+#
+
+import sys
+
+f_in  = sys.stdin
+f_out = sys.stdout
+
+if len(sys.argv) > 1:
+    f_in = file(sys.argv[1], "r")
+
+if len(sys.argv) > 2:
+    f_out = file(sys.argv[2], "w")
+
+data = f_in.read()
+
+reverse_map = {}
+for block in data.split("}"):
+    if "{" not in block:
+        continue
+    (all_selectors, all_declarations) = block.split("{")
+    selectors = [n.strip() for n in all_selectors.split(",")]
+    declarations = [n.strip() for n in all_declarations.split(";")]
+
+    for declaration in declarations:
+        if declaration is "":
+            continue
+        if declaration not in reverse_map:
+            reverse_map[declaration] = []
+        for selector in selectors:
+            reverse_map[declaration].append(selector)
+
+# reverse_map now contains a map of "declaration -> [selectors]"
+
+forward_map = {}
+for declaration in reverse_map:
+    reverse_map[declaration].sort()
+    selector_group = ",".join(reverse_map[declaration])
+    if selector_group not in forward_map:
+        forward_map[selector_group] = []
+    forward_map[selector_group].append(declaration)
+
+# forward_map now contains a map of "selector-group -> [declarations]"
+
+data = ""
+for selector_group in forward_map:
+    data = data + selector_group + "{" + ";".join(forward_map[selector_group]) + ";}"
+
+f_out.write(data)

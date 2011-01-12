@@ -1,0 +1,35 @@
+
+           ___________   ____ ___.__. _____ _______   ____ _____   
+          / ___\_  __ \_/ __ <   |  | \__  \\_  __ \_/ __ \\__  \  
+         / /_/  >  | \/\  ___/\___  |  / __ \|  | \/\  ___/ / __ \_
+         \___  /|__|    \___  > ____| (____  /__|    \___  >____  /
+        /_____/             \/\/           \/            \/     \/ 
+
+
+A tool to re-organise a CSS file in a potentially more efficient way, inspired
+by Jens Meiert's article "CSS: Using every declaration just once" [1]
+
+Warnings:
+  - The output is only *potentially* smaller. In my personal tests, I've
+    found that the output is generally between 30% smaller and 30% larger.
+  - The input is expected to be simple well-formed CSS with no comments;
+    i.e. the sort of thing that a normal CSS minifier would output.
+
+Usage:
+  greyarea in.css out.css
+  greyarea in.css >output
+  greyarea <input >output
+
+Credit:
+  Shish <shish@civicboom.com>
+
+The Name:
+  - It works on the principle of multiple selectors, one declaration
+  - A dinghy has multiple sitters and one deck
+  - The name of my last dinghy was GCU Grey Area
+  - The process of rearranging the CSS file is potentially dangerous
+    because CSS uses position within the file as a priority tiebreaker,
+    so this tool being a good idea or not is a grey area :-)
+
+References:
+  [1] http://code.google.com/speed/articles/optimizing-css.html
